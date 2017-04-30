@@ -32,5 +32,6 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
     compile 'com.amazonaws:aws-android-sdk-cognito:2.2.+'
+    compile 'com.firebase:firebase-jobdispatcher:0.5.0'
     testCompile 'junit:junit:4.12'
 }

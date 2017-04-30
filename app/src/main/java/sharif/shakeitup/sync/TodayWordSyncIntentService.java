@@ -52,44 +52,8 @@ public class TodayWordSyncIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_TODAYS_WORD.equals(action)) {
-                handleGetTodaysWord();
+                WordSyncTask.syncTodayWord(this);
             }
         }
     }
-
-    /**
-     * Handle action handleGetTodaysWord in the provided background thread.
-     */
-    private void handleGetTodaysWord() {
-        // Make api call here. And insert it into database.
-
-        OkHttpClient okHttpClient = new OkHttpClient();
-
-        HttpUrl.Builder urlBuilder =  HttpUrl.parse(ApiConfig.BASE_WORD_NIK_API).newBuilder();
-
-        urlBuilder.addQueryParameter(ApiConfig.API_KEY_PARAM, ApiConfig.API_KEY);
-
-        String url = urlBuilder.build().toString();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            Response response = okHttpClient.newCall(request).execute();
-            final String responseData = response.body().string();
-
-            Log.d(TAG, "handleGetTodaysWord: " + responseData);
-            Word word = JsonParseUtil.getWordFromJson(responseData);
-
-            getContentResolver().insert(WordContract.WordEntry.CONTENT_URI, word.getContentValues());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
 }

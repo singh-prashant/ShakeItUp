@@ -1,6 +1,8 @@
 package sharif.shakeitup.ui.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +12,10 @@ import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
 import com.amazonaws.regions.Regions;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import sharif.shakeitup.R;
 import sharif.shakeitup.db.model.Word;
 
 /**
@@ -23,6 +29,7 @@ public class TextBox extends AppCompatEditText implements TextWatcher {
     private static final Regions REGION = Regions.US_WEST_2;
     private CognitoSyncManager mCognitoSyncManager;
     private Word mWord;
+    private OnWordMatchListener mOnWordMatchListener;
 
     public TextBox(Context context) {
         super(context);
@@ -63,33 +70,38 @@ public class TextBox extends AppCompatEditText implements TextWatcher {
         this.mWord = word;
     }
 
+    public void setOnWordMatchListener(OnWordMatchListener onWordMatchListener) {
+        this.mOnWordMatchListener = onWordMatchListener;
+    }
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+
+    @Override
+    public void afterTextChanged(Editable s) {
 
         if (mWord == null){
             return;
         }
 
-        if (isWordFoundInTextBox(s)){
-            showWordFoundDialog();
+        if (mOnWordMatchListener != null){
+            mOnWordMatchListener.onWordMatch(isWordFoundInTextBox(s), s.toString());
         }
     }
 
-    private void showWordFoundDialog() {
-
-    }
-
     private boolean isWordFoundInTextBox(CharSequence s) {
-        return s.toString().toLowerCase().indexOf(mWord.getWord().toLowerCase()) != -1;
+        final String pattern = "\\b"+mWord.getWord().toLowerCase()+"\\b";
+        Pattern p= Pattern.compile(pattern);
+        Matcher m=p.matcher(s.toString().toLowerCase());
+        return m.find();
     }
 
-    @Override
-    public void afterTextChanged(Editable s) {}
 
     /***
      WordApplication application = (WordApplication) getApplicationContext();
@@ -127,6 +139,8 @@ public class TextBox extends AppCompatEditText implements TextWatcher {
     }
     });*/
 
-
+    public interface OnWordMatchListener{
+        void onWordMatch(boolean isMatched, String message);
+    }
 
 }

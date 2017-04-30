@@ -9,37 +9,37 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import sharif.shakeitup.R;
 import sharif.shakeitup.db.model.Word;
 import sharif.shakeitup.db.model.WordContract;
 import sharif.shakeitup.helper.ShakeDetector;
-import sharif.shakeitup.sync.SyncUtil;
+import sharif.shakeitup.sync.WordSyncUtils;
 import sharif.shakeitup.ui.view.TextBox;
 import sharif.shakeitup.util.Util;
 
 import static android.view.View.GONE;
 
 
-public class MainActivityFragment extends Fragment implements ShakeDetector.Listener, LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivityFragment extends Fragment implements ShakeDetector.Listener, LoaderManager.LoaderCallbacks<Cursor>,TextBox.OnWordMatchListener {
 
     private static final String TAG = "MainActivityFragment";
 
     public static final int TIME_FIVE_SECONDS = 5000;
-
     public static final int TODAY_WORD_TASK_LOADER_ID = 101;
-
     private TextBox mTextBoxMessage;
     private Button mTodayButton;
-    private TextView mTvEmptyWord;
     private ProgressBar mProgress;
     private Word mWord;
+    private MenuItem mSend;
 
     public MainActivityFragment() {
         // Required empty public constructor
@@ -59,20 +59,24 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SyncUtil.initialize(getContext());
-        startTodayWordTaskLoader();
-        initShakeDetector();
+        setHasOptionsMenu(true);
     }
 
-    private void initShakeDetector() {
-        SensorManager mSensorManager;
-        mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
-        ShakeDetector sd = new ShakeDetector(this);
-        sd.start(mSensorManager);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        mSend = menu.findItem(R.id.action_send);
     }
 
-    private void startTodayWordTaskLoader() {
-        getActivity().getSupportLoaderManager().initLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.action_send){
+            mSend.setVisible(false);
+            mTextBoxMessage.setText("");
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -87,6 +91,13 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         super.onViewCreated(view, savedInstanceState);
         initView(view);
         initListener();
+        showLoading();
+    }
+
+    private void showLoading() {
+        mProgress.setVisibility(View.VISIBLE);
+        mTextBoxMessage.setVisibility(View.INVISIBLE);
+        mTodayButton.setVisibility(GONE);
     }
 
     private void initListener() {
@@ -102,13 +113,33 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
                 Util.showWordDefinitionDialog(getContext(), mWord.getDefinition());
             }
         });
+
+        mTextBoxMessage.setOnWordMatchListener(this);
     }
 
     private void initView(View view) {
         mTextBoxMessage = (TextBox) view.findViewById(R.id.text_box_message);
         mTodayButton = (Button) view.findViewById(R.id.btn_today_word);
-        mTvEmptyWord = (TextView) view.findViewById(R.id.tv_empty_word);
         mProgress = (ProgressBar) view.findViewById(R.id.progress_bar);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        WordSyncUtils.initialize(getContext());
+        startTodayWordTaskLoader();
+        initShakeDetector();
+    }
+
+    private void initShakeDetector() {
+        SensorManager mSensorManager;
+        mSensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+        ShakeDetector sd = new ShakeDetector(this);
+        sd.start(mSensorManager);
+    }
+
+    private void startTodayWordTaskLoader() {
+        getActivity().getSupportLoaderManager().initLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
     }
 
     @Override
@@ -139,20 +170,23 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mProgress.setVisibility(GONE);
-        if (data == null || data.getCount() == 0){
-            showEmptyView(true);
-            return;
+        if (data.getCount() != 0){
+            showTodayWord(data);
         }
-        showEmptyView(false);
-        mWord = Util.getWordFromCursor(data);
-
     }
 
-    private void showEmptyView(boolean isVisible) {
-        mTvEmptyWord.setVisibility(isVisible ? View.VISIBLE : GONE);
+    private void showTodayWord(Cursor data) {
+        mProgress.setVisibility(GONE);
+        mTextBoxMessage.setVisibility(View.VISIBLE);
+        mWord = Util.getWordFromCursor(data);
+        mTextBoxMessage.setWord(mWord);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {}
+
+    @Override
+    public void onWordMatch(boolean isMatched, String message) {
+        mSend.setVisible(isMatched);
+    }
 }

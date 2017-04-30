@@ -28,14 +28,6 @@
                 android:background="@android:color/transparent"
                 android:hint="@string/hint_write_your_message" />
 
-            <TextView
-                android:id="@+id/tv_empty_word"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/no_word_found"
-                android:visibility="gone" />
-
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
@@ -50,7 +42,6 @@
         android:layout_width="match_parent"
         android:layout_height="?listPreferredItemHeightSmall"
         android:background="@drawable/blue_bend_button"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
         android:text="@string/todays_word" />
 </RelativeLayout>
