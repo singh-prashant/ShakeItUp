@@ -21,6 +21,7 @@ import sharif.shakeitup.db.model.Word;
 import sharif.shakeitup.db.model.WordContract;
 import sharif.shakeitup.helper.ShakeDetector;
 import sharif.shakeitup.sync.SyncUtil;
+import sharif.shakeitup.ui.view.TextBox;
 import sharif.shakeitup.util.Util;
 
 import static android.view.View.GONE;
@@ -34,6 +35,7 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
     public static final int TODAY_WORD_TASK_LOADER_ID = 101;
 
+    private TextBox mTextBoxMessage;
     private Button mTodayButton;
     private TextView mTvEmptyWord;
     private ProgressBar mProgress;
@@ -103,6 +105,7 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     }
 
     private void initView(View view) {
+        mTextBoxMessage = (TextBox) view.findViewById(R.id.text_box_message);
         mTodayButton = (Button) view.findViewById(R.id.btn_today_word);
         mTvEmptyWord = (TextView) view.findViewById(R.id.tv_empty_word);
         mProgress = (ProgressBar) view.findViewById(R.id.progress_bar);
@@ -119,7 +122,7 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         mTodayButton.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mTodayButton.setVisibility(GONE);
+                mTodayButton.setVisibility(View.GONE);
             }
         }, TIME_FIVE_SECONDS);
     }

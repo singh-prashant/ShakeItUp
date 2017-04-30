@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 public class ApiConfig {
 
     public static final String BASE_WORD_NIK_API = "http://api.wordnik.com:80/v4/words.json/wordOfTheDay";
-
     public static final String API_KEY = "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
     public static final String API_KEY_PARAM = "api_key";
 

@@ -1,39 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:paddingBottom="@dimen/default_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    tools:context="sharif.shakeitup.ui.fragment.MainActivityFragment">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <sharif.shakeitup.ui.view.TextBox
-        android:id="@+id/et_message"
+    <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_write_your_message"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_today_word"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:clipToPadding="false">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <sharif.shakeitup.ui.view.TextBox
+                android:id="@+id/text_box_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|top"
+                android:background="@android:color/transparent"
+                android:hint="@string/hint_write_your_message" />
+
+            <TextView
+                android:id="@+id/tv_empty_word"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/no_word_found"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_today_word"
-        android:layout_below="@id/et_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_height="?listPreferredItemHeightSmall"
         android:background="@drawable/blue_bend_button"
-        android:text="Todays word"/>
-
-    <TextView
-        android:id="@+id/tv_empty_word"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:visibility="gone"
-        android:text="@string/no_word_found"/>
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
-
+        android:layout_alignParentBottom="true"
+        android:text="@string/todays_word" />
 </RelativeLayout>
+
 
