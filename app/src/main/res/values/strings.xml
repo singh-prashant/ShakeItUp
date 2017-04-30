@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ShakeItUp</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_shake_me">Shake me bro</string>
+    <string name="label_do_not_shake_me">Don\'t shake me, bro!</string>
+    <string name="word_definition">Word definition</string>
+    <string name="no_word_found">No word found. Please connect your device to the internet. And reload the app.</string>
+    <string name="hint_write_your_message">Write your message</string>
+
+    <!-- Strings related to Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_title_display_name">Person name</string>
+    <string name="pref_default_display_name">John Smith</string>
+    <string name="action_setting">Settings</string>
+    <string name="pref_name_key" translatable="false">name</string>
+</resources>
