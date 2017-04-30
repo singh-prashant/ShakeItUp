@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import sharif.shakeitup.R;
@@ -38,6 +40,7 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     private TextBox mTextBoxMessage;
     private Button mTodayButton;
     private ProgressBar mProgress;
+    private TextView mTvTodayWord, mTvEmptyView;
     private Word mWord;
     private MenuItem mSend;
 
@@ -96,8 +99,10 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
     private void showLoading() {
         mProgress.setVisibility(View.VISIBLE);
+        mTvTodayWord.setVisibility(View.INVISIBLE);
         mTextBoxMessage.setVisibility(View.INVISIBLE);
         mTodayButton.setVisibility(GONE);
+        mTvEmptyView.setVisibility(GONE);
     }
 
     private void initListener() {
@@ -121,6 +126,8 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         mTextBoxMessage = (TextBox) view.findViewById(R.id.text_box_message);
         mTodayButton = (Button) view.findViewById(R.id.btn_today_word);
         mProgress = (ProgressBar) view.findViewById(R.id.progress_bar);
+        mTvTodayWord = (TextView) view.findViewById(R.id.tv_today_word);
+        mTvEmptyView = (TextView) view.findViewById(R.id.tv_empty_view);
     }
 
     @Override
@@ -172,14 +179,25 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.getCount() != 0){
             showTodayWord(data);
+        }else if (data.getCount() == 0){
+            showEmptyView();
+        }
+    }
+
+    private void showEmptyView() {
+        if (!Util.isNetworkAvailable(getActivity())){
+            mProgress.setVisibility(GONE);
+            mTvEmptyView.setVisibility(View.VISIBLE);
         }
     }
 
     private void showTodayWord(Cursor data) {
         mProgress.setVisibility(GONE);
+        mTvTodayWord.setVisibility(View.VISIBLE);
         mTextBoxMessage.setVisibility(View.VISIBLE);
         mWord = Util.getWordFromCursor(data);
         mTextBoxMessage.setWord(mWord);
+        mTvTodayWord.append(" " + mWord.getWord());
     }
 
     @Override

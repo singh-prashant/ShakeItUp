@@ -1,8 +1,6 @@
 package sharif.shakeitup.ui.view;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +13,6 @@ import com.amazonaws.regions.Regions;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sharif.shakeitup.R;
 import sharif.shakeitup.db.model.Word;
 
 /**

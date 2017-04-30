@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 
@@ -46,6 +48,21 @@ public class Util {
         String personName = sharedPreferences.getString(context.getString(R.string.pref_name_key),
                 context.getString(R.string.pref_default_display_name));
         return personName;
+    }
+
+    /**
+     * Return tru if the network is available or about to available.
+     * @param context Context used to get the connectivity manager.
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+
     }
 
 }
