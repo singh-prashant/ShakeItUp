@@ -197,7 +197,13 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     }
 
     private void startTodayWordTaskLoader() {
-        getActivity().getSupportLoaderManager().initLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
+        Loader loader = getLoaderManager().getLoader(TODAY_WORD_TASK_LOADER_ID);
+
+        if (loader == null){
+            getActivity().getSupportLoaderManager().initLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
+        }else {
+            getActivity().getSupportLoaderManager().restartLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
+        }
     }
 
     @Override

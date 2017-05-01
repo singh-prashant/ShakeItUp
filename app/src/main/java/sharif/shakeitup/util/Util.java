@@ -47,7 +47,6 @@ public class Util {
         word.setDefinition(cursor.getString(INDEX_WORD_DEFINITION));
         word.setPublishDate(cursor.getString(INDEX_WORD_PUBLISH_DATE));
         word.setResponseData(cursor.getString(INDEX_RESPONSE_DATA));
-        cursor.close();
         return word;
     }
 
