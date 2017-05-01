@@ -61,6 +61,8 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     private Dataset.SyncCallback mDataSyncCallback = new Dataset.SyncCallback() {
         @Override
         public void onSuccess(Dataset dataset, List<Record> updatedRecords) {
+            Toast.makeText(getContext(), R.string.message_sent_successful, Toast.LENGTH_SHORT).show();
+            mTextBoxMessage.setText("");
             Log.d(TAG, "onSuccess: " + dataset.get(RESPONSE_DATA));
         }
 
@@ -81,6 +83,8 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
         @Override
         public void onFailure(DataStorageException dse) {
+            mSend.setVisible(true);
+            Toast.makeText(getContext(), R.string.check_internet, Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onFailure: ");
         }
     };
@@ -118,7 +122,6 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         if (item.getItemId() == R.id.action_send){
             mSend.setVisible(false);
             pushMessageToServer();
-            mTextBoxMessage.setText("");
         }
 
         return super.onOptionsItemSelected(item);
