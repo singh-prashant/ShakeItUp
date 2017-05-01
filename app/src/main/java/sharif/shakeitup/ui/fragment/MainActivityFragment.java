@@ -61,9 +61,13 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     private Dataset.SyncCallback mDataSyncCallback = new Dataset.SyncCallback() {
         @Override
         public void onSuccess(Dataset dataset, List<Record> updatedRecords) {
-            Toast.makeText(getContext(), R.string.message_sent_successful, Toast.LENGTH_SHORT).show();
-            mTextBoxMessage.setText("");
-            Log.d(TAG, "onSuccess: " + dataset.get(RESPONSE_DATA));
+           getActivity().runOnUiThread(new Runnable() {
+               @Override
+               public void run() {
+                   Toast.makeText(getContext(), R.string.message_sent_successful, Toast.LENGTH_SHORT).show();
+                   mTextBoxMessage.setText("");
+               }
+           });
         }
 
         @Override
@@ -83,9 +87,13 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
         @Override
         public void onFailure(DataStorageException dse) {
-            mSend.setVisible(true);
-            Toast.makeText(getContext(), R.string.check_internet, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "onFailure: ");
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mSend.setVisible(true);
+                    Toast.makeText(getContext(), R.string.check_internet, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     };
 
@@ -107,6 +115,7 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WordSyncUtils.initialize(getContext());
         setHasOptionsMenu(true);
     }
 
@@ -187,7 +196,6 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        WordSyncUtils.initialize(getContext());
         startTodayWordTaskLoader();
         initShakeDetector();
     }
