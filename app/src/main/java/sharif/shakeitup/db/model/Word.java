@@ -12,6 +12,7 @@ public class Word {
     private String word;
     private String definition;
     private String publishDate;
+    private String responseData;
 
 
     public int getId() {
@@ -42,6 +43,14 @@ public class Word {
         return publishDate;
     }
 
+    public String getResponseData() {
+        return responseData;
+    }
+
+    public void setResponseData(String responseData) {
+        this.responseData = responseData;
+    }
+
     public void setPublishDate(String publishDate) {
         this.publishDate = publishDate;
     }
@@ -53,6 +62,7 @@ public class Word {
         contentValues.put(WordContract.WordEntry.COLUMN_WORD_NAME, getWord());
         contentValues.put(WordContract.WordEntry.COLUMN_WORD_DEFINITION, getDefinition());
         contentValues.put(WordContract.WordEntry.COLUMN_WORD_PUBLISH_DATE, getPublishDate());
+        contentValues.put(WordContract.WordEntry.COLUMN_RESPONSE_DATA, getResponseData());
         return contentValues;
     }
 

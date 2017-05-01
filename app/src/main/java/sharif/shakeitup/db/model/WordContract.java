@@ -38,12 +38,15 @@ public class WordContract {
 
         public static final String COLUMN_WORD_PUBLISH_DATE = "word_publish_date";
 
+        public static final String COLUMN_RESPONSE_DATA = "response_data";
+
         public static String getWordCreateQuery() {
             return "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_WORD_NAME + " TEXT, " +
                     COLUMN_WORD_DEFINITION + " TEXT, " +
-                    COLUMN_WORD_PUBLISH_DATE + " TEXT" + ");";
+                    COLUMN_WORD_PUBLISH_DATE + " TEXT, " +
+                    COLUMN_RESPONSE_DATA + " TEXT" + ");";
         }
 
         public static String getWordDeleteQuery() {

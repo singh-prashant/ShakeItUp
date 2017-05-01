@@ -20,7 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.cognito.Dataset;
+import com.amazonaws.mobileconnectors.cognito.Record;
+import com.amazonaws.mobileconnectors.cognito.SyncConflict;
+import com.amazonaws.mobileconnectors.cognito.exceptions.DataStorageException;
+
+import java.util.List;
+
 import sharif.shakeitup.R;
+import sharif.shakeitup.WordApplication;
 import sharif.shakeitup.db.model.Word;
 import sharif.shakeitup.db.model.WordContract;
 import sharif.shakeitup.helper.ShakeDetector;
@@ -35,6 +43,11 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
     private static final String TAG = "MainActivityFragment";
 
+    public static final String DATA_SET_NAME = "todays_word";
+    public static final String PERSON_NAME = "name";
+    private static final String MESSAGE = "message";
+    private static final String RESPONSE_DATA = "wotd";
+
     public static final int TIME_FIVE_SECONDS = 5000;
     public static final int TODAY_WORD_TASK_LOADER_ID = 101;
     private TextBox mTextBoxMessage;
@@ -43,6 +56,34 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     private TextView mTvTodayWord, mTvEmptyView;
     private Word mWord;
     private MenuItem mSend;
+
+    // This class provide response call back from amazon aws server.
+    private Dataset.SyncCallback mDataSyncCallback = new Dataset.SyncCallback() {
+        @Override
+        public void onSuccess(Dataset dataset, List<Record> updatedRecords) {
+            Log.d(TAG, "onSuccess: " + dataset.get(RESPONSE_DATA));
+        }
+
+        @Override
+        public boolean onConflict(Dataset dataset, List<SyncConflict> conflicts) {
+            return false;
+        }
+
+        @Override
+        public boolean onDatasetDeleted(Dataset dataset, String datasetName) {
+            return false;
+        }
+
+        @Override
+        public boolean onDatasetsMerged(Dataset dataset, List<String> datasetNames) {
+            return false;
+        }
+
+        @Override
+        public void onFailure(DataStorageException dse) {
+            Log.d(TAG, "onFailure: ");
+        }
+    };
 
     public MainActivityFragment() {
         // Required empty public constructor
@@ -76,10 +117,20 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
         if (item.getItemId() == R.id.action_send){
             mSend.setVisible(false);
+            pushMessageToServer();
             mTextBoxMessage.setText("");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void pushMessageToServer() {
+        WordApplication application = (WordApplication) getActivity().getApplicationContext();
+        Dataset dataset = application.getCognitoSyncManager().openOrCreateDataset(DATA_SET_NAME);
+        dataset.put(PERSON_NAME, Util.getPersonName(getContext()));
+        dataset.put(MESSAGE, mTextBoxMessage.getText().toString());
+        dataset.put(RESPONSE_DATA, mWord.getResponseData());
+        dataset.synchronize(mDataSyncCallback);
     }
 
     @Override
@@ -167,11 +218,16 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        String mSelection = WordContract.WordEntry.COLUMN_WORD_PUBLISH_DATE + "=?";
+
+        String[] mSelectionArgs = new String[]{Util.getToday()};
+
         return new CursorLoader(getContext(),
                 WordContract.WordEntry.CONTENT_URI,
                 null,
-                null,
-                null,
+                mSelection,
+                mSelectionArgs,
                 null);
     }
 

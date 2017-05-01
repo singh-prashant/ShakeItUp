@@ -30,9 +30,12 @@ public class JsonParseUtil {
         JSONObject wordJson = new JSONObject(responseData);
         final int id = wordJson.getInt(ID);
         final String wordName = wordJson.getString(WORD);
+        final String publishDateFullFormat = wordJson.getString(PUBLISH_DATE);
+        final String publishDate = publishDateFullFormat.substring(0, publishDateFullFormat.indexOf('T'));
         word.setId(id);
         word.setWord(wordName);
-
+        word.setPublishDate(publishDate);
+        word.setResponseData(responseData);
         JSONArray definitionsArray = wordJson.getJSONArray(DEFINITIONS);
         final int size = definitionsArray.length();
         for (int jIndex = 0; jIndex < size; jIndex++){
