@@ -6,8 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import sharif.shakeitup.db.model.Word;
-
 /**
  * Created by Sharif-PC on 4/29/2017.
  */
@@ -19,13 +17,13 @@ public class JsonParseUtil {
     public static final String DEFINITIONS = "definitions";
     public static final String DEFINITIONS_TEXT = "text";
 
-    public static Word getWordFromJson(String responseData) throws JSONException {
+    public static sharif.shakeitup.db.entity.Word getWordFromJson(String responseData) throws JSONException {
 
-        Word word = null;
+        sharif.shakeitup.db.entity.Word word = null;
 
         if (TextUtils.isEmpty(responseData))return word;
 
-        word = new Word();
+        word = new sharif.shakeitup.db.entity.Word();
 
         JSONObject wordJson = new JSONObject(responseData);
         final int id = wordJson.getInt(ID);

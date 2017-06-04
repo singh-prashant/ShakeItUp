@@ -23,11 +23,6 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:name=".db.WordProvider"
-            android:authorities="com.sharif.shakeitup"
-            android:exported="false" />
-
         <service
             android:name=".sync.TodayWordSyncIntentService"
             android:exported="false" />

@@ -1,5 +1,6 @@
 package sharif.shakeitup.ui.activity;
 
+import android.arch.lifecycle.LifecycleActivity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +9,7 @@ import android.view.MenuItem;
 
 import sharif.shakeitup.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends LifecycleActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

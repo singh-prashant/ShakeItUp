@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import sharif.shakeitup.R;
-import sharif.shakeitup.db.model.Word;
 
 /**
  * Created by Sharif-PC on 4/29/2017.
@@ -37,17 +36,6 @@ public class Util {
                 .setPositiveButton(android.R.string.yes,
                         new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {}}).show();
-    }
-
-    public static Word getWordFromCursor(Cursor cursor) {
-        cursor.moveToFirst();
-        Word word = new Word();
-        word.setId(cursor.getInt(INDEX_WORD_ID));
-        word.setWord(cursor.getString(INDEX_WORD_NAME));
-        word.setDefinition(cursor.getString(INDEX_WORD_DEFINITION));
-        word.setPublishDate(cursor.getString(INDEX_WORD_PUBLISH_DATE));
-        word.setResponseData(cursor.getString(INDEX_RESPONSE_DATA));
-        return word;
     }
 
     public static String getPersonName(Context context) {

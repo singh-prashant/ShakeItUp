@@ -13,7 +13,7 @@ import com.amazonaws.regions.Regions;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sharif.shakeitup.db.model.Word;
+import sharif.shakeitup.db.entity.Word;
 
 /**
  * Created by Sharif-PC on 4/30/2017.

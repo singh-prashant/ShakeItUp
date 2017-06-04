@@ -1,19 +1,21 @@
-package sharif.shakeitup.db.model;
+package sharif.shakeitup.db.entity;
 
-import android.content.ContentValues;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
 /**
- * Created by Sharif-PC on 4/28/2017.
+ * Created by Sharif-PC on 5/22/2017.
  */
 
+@Entity(tableName = "words")
 public class Word {
 
+    @PrimaryKey
     private int id;
     private String word;
     private String definition;
     private String publishDate;
     private String responseData;
-
 
     public int getId() {
         return id;
@@ -43,6 +45,10 @@ public class Word {
         return publishDate;
     }
 
+    public void setPublishDate(String publishDate) {
+        this.publishDate = publishDate;
+    }
+
     public String getResponseData() {
         return responseData;
     }
@@ -51,19 +57,9 @@ public class Word {
         this.responseData = responseData;
     }
 
-    public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate;
+
+    @Override
+    public String toString() {
+        return "id: " + id + " name: " + word;
     }
-
-
-    public ContentValues getContentValues(){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(WordContract.WordEntry._ID, getId());
-        contentValues.put(WordContract.WordEntry.COLUMN_WORD_NAME, getWord());
-        contentValues.put(WordContract.WordEntry.COLUMN_WORD_DEFINITION, getDefinition());
-        contentValues.put(WordContract.WordEntry.COLUMN_WORD_PUBLISH_DATE, getPublishDate());
-        contentValues.put(WordContract.WordEntry.COLUMN_RESPONSE_DATA, getResponseData());
-        return contentValues;
-    }
-
 }

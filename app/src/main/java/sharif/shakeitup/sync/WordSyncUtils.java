@@ -1,10 +1,9 @@
 package sharif.shakeitup.sync;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.Driver;
@@ -16,7 +15,8 @@ import com.firebase.jobdispatcher.Trigger;
 
 import java.util.concurrent.TimeUnit;
 
-import sharif.shakeitup.db.model.WordContract;
+import sharif.shakeitup.db.WordDb;
+import sharif.shakeitup.db.entity.Word;
 import sharif.shakeitup.util.Util;
 
 /**
@@ -83,21 +83,11 @@ public class WordSyncUtils {
             @Override
             protected Void doInBackground(Void... voids) {
 
-                String mSelection = WordContract.WordEntry.COLUMN_WORD_PUBLISH_DATE + "=?";
+               LiveData word = WordDb.getInstance(context).wordDao().getWordByDate(Util.getToday());
 
-                String[] mSelectionArgs = new String[]{Util.getToday()};
-
-                Cursor cursor = context.getContentResolver().query(WordContract.WordEntry.CONTENT_URI,
-                        null,
-                        mSelection,
-                        mSelectionArgs,
-                        null);
-                Log.d(WORD_SYNC_TAG, "doInBackground: count: " + cursor.getCount() + " today: " + Util.getToday());
-                if (cursor.getCount() == 0){
+                if (word == null){
                     startImmediateSync(context);
                 }
-
-                cursor.close();
 
                 return null;
             }

@@ -6,15 +6,14 @@ import android.util.Log;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import sharif.shakeitup.api.ApiConfig;
-import sharif.shakeitup.db.model.Word;
-import sharif.shakeitup.db.model.WordContract;
+import sharif.shakeitup.db.WordDb;
+import sharif.shakeitup.db.entity.Word;
 import sharif.shakeitup.util.JsonParseUtil;
 import sharif.shakeitup.util.Util;
 
@@ -47,8 +46,8 @@ public class WordSyncTask {
             Response response = okHttpClient.newCall(request).execute();
             final String responseData = response.body().string();
             Word word = JsonParseUtil.getWordFromJson(responseData);
-            context.getContentResolver().insert(WordContract.WordEntry.CONTENT_URI, word.getContentValues());
-
+            WordDb.getInstance(context).wordDao().insert(word);
+            Log.d(TAG, "syncTodayWord: ");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

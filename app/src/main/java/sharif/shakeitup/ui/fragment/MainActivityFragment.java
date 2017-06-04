@@ -1,14 +1,12 @@
 package sharif.shakeitup.ui.fragment;
 
-import android.database.Cursor;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,17 +27,17 @@ import java.util.List;
 
 import sharif.shakeitup.R;
 import sharif.shakeitup.WordApplication;
-import sharif.shakeitup.db.model.Word;
-import sharif.shakeitup.db.model.WordContract;
 import sharif.shakeitup.helper.ShakeDetector;
+import sharif.shakeitup.db.entity.Word;
 import sharif.shakeitup.sync.WordSyncUtils;
 import sharif.shakeitup.ui.view.TextBox;
+import sharif.shakeitup.ui.viewmodel.WordViewModel;
 import sharif.shakeitup.util.Util;
 
 import static android.view.View.GONE;
 
 
-public class MainActivityFragment extends Fragment implements ShakeDetector.Listener, LoaderManager.LoaderCallbacks<Cursor>,TextBox.OnWordMatchListener {
+public class MainActivityFragment extends Fragment implements ShakeDetector.Listener, TextBox.OnWordMatchListener {
 
     private static final String TAG = "MainActivityFragment";
 
@@ -56,6 +54,8 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     private TextView mTvTodayWord, mTvEmptyView;
     private Word mWord;
     private MenuItem mSend;
+
+    private WordViewModel mWordViewModel;
 
     // This class provide response call back from amazon aws server.
     private Dataset.SyncCallback mDataSyncCallback = new Dataset.SyncCallback() {
@@ -115,7 +115,6 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WordSyncUtils.initialize(getContext());
         setHasOptionsMenu(true);
     }
 
@@ -196,8 +195,19 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        startTodayWordTaskLoader();
         initShakeDetector();
+
+        mWordViewModel = ViewModelProviders.of(getActivity()).get(WordViewModel.class);
+        mWordViewModel.word.observe((LifecycleOwner) getActivity(), new Observer<Word>() {
+            @Override
+            public void onChanged(@Nullable Word word) {
+                if (word == null){
+                    showEmptyView();
+                }else {
+                    showTodayWord(word);
+                }
+            }
+        });
     }
 
     private void initShakeDetector() {
@@ -207,15 +217,6 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         sd.start(mSensorManager);
     }
 
-    private void startTodayWordTaskLoader() {
-        Loader loader = getLoaderManager().getLoader(TODAY_WORD_TASK_LOADER_ID);
-
-        if (loader == null){
-            getActivity().getSupportLoaderManager().initLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
-        }else {
-            getActivity().getSupportLoaderManager().restartLoader(TODAY_WORD_TASK_LOADER_ID, null, this);
-        }
-    }
 
     @Override
     public void hearShake() {
@@ -233,30 +234,6 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         }, TIME_FIVE_SECONDS);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        String mSelection = WordContract.WordEntry.COLUMN_WORD_PUBLISH_DATE + "=?";
-
-        String[] mSelectionArgs = new String[]{Util.getToday()};
-
-        return new CursorLoader(getContext(),
-                WordContract.WordEntry.CONTENT_URI,
-                null,
-                mSelection,
-                mSelectionArgs,
-                null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data.getCount() != 0){
-            showTodayWord(data);
-        }else if (data.getCount() == 0){
-            showEmptyView();
-        }
-    }
-
     private void showEmptyView() {
         if (!Util.isNetworkAvailable(getActivity())){
             mProgress.setVisibility(GONE);
@@ -264,17 +241,14 @@ public class MainActivityFragment extends Fragment implements ShakeDetector.List
         }
     }
 
-    private void showTodayWord(Cursor data) {
+    private void showTodayWord(Word word) {
         mProgress.setVisibility(GONE);
         mTvTodayWord.setVisibility(View.VISIBLE);
         mTextBoxMessage.setVisibility(View.VISIBLE);
-        mWord = Util.getWordFromCursor(data);
-        mTextBoxMessage.setWord(mWord);
-        mTvTodayWord.append(" " + mWord.getWord());
+        //mWord = Util.getWordFromCursor(data);
+        mTextBoxMessage.setWord(word);
+        mTvTodayWord.append(" " + word.getWord());
     }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {}
 
     @Override
     public void onWordMatch(boolean isMatched, String message) {
